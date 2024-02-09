@@ -8,6 +8,7 @@ function createLinkedList() {
     let obj = list.head;
     if (obj === null) {
       list.head = newNode;
+      total += 1;
       return;
     }
     while (obj.next) {
@@ -42,6 +43,9 @@ function createLinkedList() {
       return 'The list is empty';
     }
     for (let i = 0; i < index; i++) {
+      if (!obj) {
+        return 'Index is out of bounds';
+      }
       obj = obj.next;
     }
     return obj;
@@ -51,10 +55,19 @@ function createLinkedList() {
     if (obj === null) {
       return;
     }
+    let returnObject;
+    if (!obj.next) {
+      returnObject = obj;
+      list.head = null;
+      total -= 1;
+      return returnObject;
+    }
     while (obj.next) {
       if (obj.next.next === null) {
+        returnObject = obj.next;
         obj.next = null;
-        return;
+        total -= 1;
+        return returnObject;
       }
       obj = obj.next;
     }
@@ -70,6 +83,9 @@ function createLinkedList() {
       }
       obj = obj.next;
     }
+    if (obj.value === value) {
+      return true;
+    }
     return false;
   };
   list.find = (value) => {
@@ -84,6 +100,9 @@ function createLinkedList() {
       }
       index += 1;
       obj = obj.next;
+    }
+    if (obj.value === value) {
+      return index;
     }
     return null;
   };
@@ -101,11 +120,45 @@ function createLinkedList() {
     return ojbString;
   };
   list.insertAt = (value, index) => {
+    const insertionIndex = list.at(index - 1);
+    if (!insertionIndex) {
+      return 'Index is out of bounds';
+    }
     const newNode = createNewNode(value, list.at(index));
-    list.at(index - 1).next = newNode;
+    if (index === 0) {
+      list.head = newNode;
+      return newNode;
+    }
+    insertionIndex.next = newNode;
+    total += 1;
+    return newNode;
   };
   list.removeAt = (index) => {
-    list.at(index - 1).next = list.at(index + 1);
+    let returnObject;
+    if (index === 0) {
+      returnObject = list.head;
+      list.head = list.head.next;
+      total -= 1;
+      return returnObject;
+    }
+    const previousObject = list.at(index - 1);
+    if (typeof previousObject === 'string') {
+      return previousObject;
+    }
+    const obj = list.head;
+    if (obj === null) {
+      return 'The list is empty';
+    }
+    if (!previousObject.next.next) {
+      returnObject = previousObject.next;
+      previousObject.next = null;
+      total -= 1;
+    } else {
+      returnObject = previousObject.next;
+      previousObject.next = previousObject.next.next;
+      total -= 1;
+    }
+    return returnObject;
   };
   return list;
 }
